@@ -3,64 +3,32 @@ const router = express.Router();
 const schema = require('../validations/user.schema');
 import { validateSchema } from '../validations/validations';
 import { usersList } from '../services/userDataService';
+import UserController from '../controllers/userController';
 
-const findUser = (userId) => {
-    return usersList.find((user) => user.id === userId);
-};
+const userController = new UserController(usersList);
 
-router.get('/users/:id', (req, res) => {
-    const currentUser = findUser(req.params.id);
-    if (currentUser) {
-        res.status(200).json(currentUser);
-    } else {
-        res.status(404).send('User not found');
-    }
-});
+router.get('/users/:id', userController.getUser.bind(userController));
 
-router.post('/addUser', validateSchema(schema), (req, res) => {
-    const user = findUser(req.body.id);
-    if (user) {
-        res.status(404).send('This User already exist');
-    } else {
-        usersList.push(req.body);
-        res.status(200).send('User was added successfully');
-    }
-});
+router.post(
+    '/addUser',
+    validateSchema(schema),
+    userController.addUser.bind(userController)
+);
 
-router.put('/updateUser', validateSchema(schema), (req, res) => {
-    const user = findUser(req.body.id);
-    if (user) {
-        usersList[usersList.indexOf(user)] = req.body;
-        res.status(200).send('Updated successfully');
-    } else {
-        res.status(404).send('User not found');
-    }
-});
+router.put(
+    '/updateUser',
+    validateSchema(schema),
+    userController.updateUser.bind(userController)
+);
 
-router.delete('/removeUser/:id', (req, res) => {
-    const user = findUser(req.params.id);
-    if (user) {
-        usersList[usersList.indexOf(user)].isDeleted = true;
-        res.status(200).send('Deleted successfully');
-    } else {
-        res.status(404).send('User not found');
-    }
-});
+router.delete(
+    '/removeUser/:id',
+    userController.deleteUser.bind(userController)
+);
 
-router.get('/auto-suggest/user', (req, res) => {
-    const filteredUsers = usersList
-        .filter((user) => {
-            return user.login.includes(req.query.search);
-        })
-        .sort((a, b) => {
-            return a.login.localeCompare(b.login);
-        })
-        .slice(0, req.query.limit);
-    if (filteredUsers.length !== 0) {
-        res.status(200).send(filteredUsers);
-    } else {
-        res.status(404).send('Users not found');
-    }
-});
+router.get(
+    '/auto-suggest/user',
+    userController.suggestUsers.bind(userController)
+);
 
 module.exports = router;

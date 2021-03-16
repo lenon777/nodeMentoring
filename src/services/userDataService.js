@@ -6,22 +6,22 @@ module.exports = {
                 login: 'bqwe@asd.com',
                 password: '123123',
                 age: 25,
-                isDeleted: false,
+                isDeleted: false
             },
             {
                 id: '2',
                 login: 'aqwe@asd.com',
                 password: 'qweasd',
                 age: 30,
-                isDeleted: false,
+                isDeleted: false
             },
             {
                 id: '3',
                 login: 'casqwedasd@asd.com',
                 password: '123123',
                 age: 21,
-                isDeleted: false,
-            },
+                isDeleted: false
+            }
         ];
-    })(),
+    })()
 };

@@ -9,7 +9,7 @@
     "task1": "npm run start -- src/task1.1",
     "task2": "npm run start -- src/task1.2",
     "task3": "npm run start -- src/task2.1",
-    "lint": "eslint ./src/task2.1.js"
+    "lint": "eslint ./src/**"
   },
   "author": "",
   "license": "ISC",
