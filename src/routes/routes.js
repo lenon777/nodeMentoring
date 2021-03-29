@@ -2,10 +2,12 @@ const express = require('express');
 const router = express.Router();
 const schema = require('../validations/user.schema');
 import { validateSchema } from '../validations/validations';
-import { usersList } from '../services/userDataService';
 import UserController from '../controllers/userController';
 
-const userController = new UserController(usersList);
+const users = require('../models/UserModel');
+const suggestUsers = require('../services/suggestUsersService');
+
+const userController = new UserController(users, suggestUsers);
 
 router.get('/users/:id', userController.getUser.bind(userController));
 
