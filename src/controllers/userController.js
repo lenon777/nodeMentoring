@@ -1,62 +1,59 @@
 export default class UserController {
-    constructor(usersList) {
+    constructor(usersList, suggestedList) {
         this.usersList = usersList;
-    }
-    findUser(userId) {
-        return this.usersList.find((user) => user.id === userId);
+        this.suggestedList = suggestedList;
     }
     getUser(req, res) {
-        const currentUser = this.findUser(req.params.id);
-        if (currentUser) {
-            res.status(200).json(currentUser);
-        } else {
-            res.status(404).send('User not found');
-        }
+        this.usersList
+            .findOne({ where: { id: req.params.id } })
+            .then((user) => {
+                if (user) {
+                    res.status(200).json(user);
+                } else {
+                    res.status(404).send('User not found');
+                }
+            })
+            .catch((err) => console.log(err));
     }
 
     addUser(req, res) {
-        const user = this.findUser(req.body.id);
-        if (user) {
-            res.status(404).send('This User already exist');
-        } else {
-            this.usersList.push(req.body);
-            res.status(200).send('User was added successfully');
-        }
+        console.log(req.body);
+        this.usersList
+            .create(req.body)
+            .then(() => {
+                res.status(200).send('User was added successfully');
+            })
+            .catch((err) => console.log(err));
     }
 
     updateUser(req, res) {
-        const user = this.findUser(req.body.id);
-        if (user) {
-            this.usersList[this.usersList.indexOf(user)] = req.body;
-            res.status(200).send('Updated successfully');
-        } else {
-            res.status(404).send('User not found');
-        }
+        this.usersList
+            .update(req.body, { where: { id: req.body.id } })
+            .then((user) => {
+                if (user[0]) {
+                    res.status(200).send('Updated successfully');
+                } else {
+                    res.status(404).send('User not found');
+                }
+            })
+            .catch((err) => console.log(err));
     }
 
     deleteUser(req, res) {
-        const user = this.findUser(req.params.id);
-        if (user) {
-            this.usersList[this.usersList.indexOf(user)].isDeleted = true;
-            res.status(200).send('Deleted successfully');
-        } else {
-            res.status(404).send('User not found');
-        }
+        this.usersList
+            .destroy({
+                where: {
+                    id: req.params.id
+                }
+            })
+            .then(() => res.send('Deleted successfully'));
     }
 
     suggestUsers(req, res) {
-        const filteredUsers = this.usersList
-            .filter((user) => {
-                return user.login.includes(req.query.search);
-            })
-            .sort((a, b) => {
-                return a.login.localeCompare(b.login);
-            })
-            .slice(0, req.query.limit);
-        if (filteredUsers.length !== 0) {
-            res.status(200).send(filteredUsers);
-        } else {
-            res.status(404).send('Users not found');
-        }
+        this.usersList.findAll().then((users) => {
+            res.send(
+                this.suggestedList(users, req.query.search, req.query.limit)
+            );
+        });
     }
 }
