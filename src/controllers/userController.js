@@ -14,12 +14,12 @@ export default class UserController {
 
     async addUser(req, res) {
         await this.usersList.create(req.body);
-        res.status(200).send('User was added successfully');
+        res.status(200).json({});
     }
 
     async updateUser(req, res) {
         await this.usersList.update(req.body, { where: { id: req.body.id } });
-        res.status(200).send('Updated successfully');
+        res.status(200).json({});
     }
 
     async deleteUser(req, res) {
@@ -28,7 +28,7 @@ export default class UserController {
                 id: req.params.id,
             },
         });
-        res.status(200).send('Deleted successfully');
+        res.status(200).json({});
     }
 
     async suggestUsers(req, res) {
