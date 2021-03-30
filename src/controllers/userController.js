@@ -9,7 +9,7 @@ export default class UserController {
         });
         user
             ? res.status(200).json(user)
-            : res.status(404).send('User not found');
+            : res.status(404).json({});
     }
 
     async addUser(req, res) {
@@ -28,11 +28,11 @@ export default class UserController {
                 id: req.params.id,
             },
         });
-        res.send('Deleted successfully');
+        res.status(200).send('Deleted successfully');
     }
 
     async suggestUsers(req, res) {
         const users = await this.usersList.findAll();
-        res.send(this.suggestedList(users, req.query.search, req.query.limit));
+        res.status(200).send(this.suggestedList(users, req.query.search, req.query.limit));
     }
 }
