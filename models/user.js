@@ -2,6 +2,7 @@
 const {
   Model
 } = require('sequelize');
+
 class User extends Model {
     /**
      * Helper method for defining associations.
