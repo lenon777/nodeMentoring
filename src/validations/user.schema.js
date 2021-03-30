@@ -1,6 +1,7 @@
 const Joi = require('joi');
 
 module.exports = Joi.object().keys({
+    id: Joi.number(),
     login: Joi.string()
         .required()
         .email({ tlds: { allow: false } }),

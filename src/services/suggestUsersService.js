@@ -3,9 +3,7 @@ const suggestedList = (users, searchVal, limit) => {
         .filter((user) => {
             return user.login.includes(searchVal);
         })
-        .sort((a, b) => {
-            return a.login.localeCompare(b.login);
-        })
+        .sort((a, b) => a.login.localeCompare(b.login))
         .slice(0, limit);
 };
 
