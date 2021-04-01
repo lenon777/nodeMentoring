@@ -5,16 +5,18 @@ export default class UserController {
     }
     async getUser(req, res) {
         const user = await this.usersList.findOne({
-            where: { id: req.params.id },
+            where: { id: req.params.id }
         });
-        user
-            ? res.status(200).json(user)
-            : res.status(404).json({});
+        if (user) {
+            res.status(200).json(user);
+        } else {
+            res.status(404).json({});
+        }
     }
 
     async addUser(req, res) {
         await this.usersList.create(req.body);
-        res.status(200).json({});
+        res.status(201).json({});
     }
 
     async updateUser(req, res) {
@@ -25,14 +27,16 @@ export default class UserController {
     async deleteUser(req, res) {
         await this.usersList.destroy({
             where: {
-                id: req.params.id,
-            },
+                id: req.params.id
+            }
         });
         res.status(200).json({});
     }
 
     async suggestUsers(req, res) {
         const users = await this.usersList.findAll();
-        res.status(200).send(this.suggestedList(users, req.query.search, req.query.limit));
+        res.status(200).send(
+            this.suggestedList(users, req.query.search, req.query.limit)
+        );
     }
 }
