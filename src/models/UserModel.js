@@ -13,7 +13,8 @@ const User = db.define('user', {
         type: Sequelize.NUMBER
     },
     isDeleted: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
     }
 });
 

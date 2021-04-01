@@ -12,24 +12,24 @@ const userController = new UserController(users, suggestUsers);
 router.get('/users/:id', userController.getUser.bind(userController));
 
 router.post(
-    '/addUser',
+    '/users',
     validateSchema(schema),
     userController.addUser.bind(userController)
 );
 
 router.put(
-    '/updateUser',
+    '/users',
     validateSchema(schema),
     userController.updateUser.bind(userController)
 );
 
 router.delete(
-    '/removeUser/:id',
+    '/users/:id',
     userController.deleteUser.bind(userController)
 );
 
 router.get(
-    '/auto-suggest/user',
+    '/auto-suggest/users',
     userController.suggestUsers.bind(userController)
 );
 
