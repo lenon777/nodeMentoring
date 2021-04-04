@@ -1,7 +1,7 @@
 const Joi = require('joi');
 
 module.exports = Joi.object().keys({
-    id: Joi.string().required(),
+    id: Joi.number(),
     login: Joi.string()
         .required()
         .email({ tlds: { allow: false } }),
@@ -9,5 +9,5 @@ module.exports = Joi.object().keys({
         .pattern(new RegExp('^(?=.*[a-zA-Z])(?=.*[0-9])'))
         .required(),
     age: Joi.number().min(4).max(130).required(),
-    isDeleted: Joi.boolean().required()
+    isDeleted: Joi.boolean()
 });

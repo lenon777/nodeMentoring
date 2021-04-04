@@ -1,62 +1,42 @@
 export default class UserController {
-    constructor(usersList) {
+    constructor(usersList, suggestedList) {
         this.usersList = usersList;
+        this.suggestedList = suggestedList;
     }
-    findUser(userId) {
-        return this.usersList.find((user) => user.id === userId);
-    }
-    getUser(req, res) {
-        const currentUser = this.findUser(req.params.id);
-        if (currentUser) {
-            res.status(200).json(currentUser);
-        } else {
-            res.status(404).send('User not found');
-        }
-    }
-
-    addUser(req, res) {
-        const user = this.findUser(req.body.id);
+    async getUser(req, res) {
+        const user = await this.usersList.findOne({
+            where: { id: req.params.id }
+        });
         if (user) {
-            res.status(404).send('This User already exist');
+            res.status(200).json(user);
         } else {
-            this.usersList.push(req.body);
-            res.status(200).send('User was added successfully');
+            res.status(404).json({});
         }
     }
 
-    updateUser(req, res) {
-        const user = this.findUser(req.body.id);
-        if (user) {
-            this.usersList[this.usersList.indexOf(user)] = req.body;
-            res.status(200).send('Updated successfully');
-        } else {
-            res.status(404).send('User not found');
-        }
+    async addUser(req, res) {
+        await this.usersList.create(req.body);
+        res.status(201).json({});
     }
 
-    deleteUser(req, res) {
-        const user = this.findUser(req.params.id);
-        if (user) {
-            this.usersList[this.usersList.indexOf(user)].isDeleted = true;
-            res.status(200).send('Deleted successfully');
-        } else {
-            res.status(404).send('User not found');
-        }
+    async updateUser(req, res) {
+        await this.usersList.update(req.body, { where: { id: req.body.id } });
+        res.status(200).json({});
     }
 
-    suggestUsers(req, res) {
-        const filteredUsers = this.usersList
-            .filter((user) => {
-                return user.login.includes(req.query.search);
-            })
-            .sort((a, b) => {
-                return a.login.localeCompare(b.login);
-            })
-            .slice(0, req.query.limit);
-        if (filteredUsers.length !== 0) {
-            res.status(200).send(filteredUsers);
-        } else {
-            res.status(404).send('Users not found');
-        }
+    async deleteUser(req, res) {
+        await this.usersList.destroy({
+            where: {
+                id: req.params.id
+            }
+        });
+        res.status(200).json({});
+    }
+
+    async suggestUsers(req, res) {
+        const users = await this.usersList.findAll();
+        res.status(200).send(
+            this.suggestedList(users, req.query.search, req.query.limit)
+        );
     }
 }
