@@ -35,8 +35,6 @@ export default class UserController {
 
     async suggestUsers(req, res) {
         const users = await this.usersList.findAll();
-        res.status(200).send(
-            this.suggestedList(users, req.query.search, req.query.limit)
-        );
+        res.status(200).send(this.suggestedList(users, req.query.search, req.query.limit));
     }
 }

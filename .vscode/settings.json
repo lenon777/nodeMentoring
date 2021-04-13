@@ -1,0 +1,8 @@
+{
+	"editor.insertSpaces": false,
+	"editor.detectIndentation": false,
+	"workbench.editor.closeEmptyGroups": false,
+	"prettier.useTabs": false,
+	"prettier.endOfLine": "auto",
+	"prettier.trailingComma": "none"
+}
