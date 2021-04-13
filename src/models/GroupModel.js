@@ -2,26 +2,20 @@ const Sequelize = require('sequelize');
 
 const db = require('../data-access/database');
 
-const User = db.define('user', {
+const Group = db.define('group', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true,
         allowNull: false
     },
-    login: {
+    name: {
         type: Sequelize.STRING
     },
-    password: {
-        type: Sequelize.STRING
-    },
-    age: {
-        type: Sequelize.NUMBER
-    },
-    isDeleted: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: false
+    permission: {
+        type: Sequelize.ARRAY(Sequelize.STRING),
+        defaultValue: ['READ', 'WRITE', 'DELETE', 'SHARE', 'UPLOAD_FILES']
     }
 });
 
-module.exports = User;
+module.exports = Group;
