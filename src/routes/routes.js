@@ -32,12 +32,12 @@ router.get('/auto-suggest/users', userController.suggestUsers.bind(userControlle
 
 // Group routes
 
-router.get('/group/:id', groupController.getGroup.bind(groupController));
+router.get('/groups/:id', groupController.getGroup.bind(groupController));
 router.get('/groups', groupController.getGroups.bind(groupController));
 
-router.post('/group', groupController.createGroup.bind(groupController));
-router.put('/group/:id', groupController.updateGroup.bind(groupController));
-router.delete('/group/:id', groupController.deleteGroup.bind(groupController));
+router.post('/groups', groupController.createGroup.bind(groupController));
+router.put('/groups/:id', groupController.updateGroup.bind(groupController));
+router.delete('/groups/:id', groupController.deleteGroup.bind(groupController));
 
 router.get('/addUserToGroup', usersGroupController.addUserToGroup.bind(usersGroupController));
 

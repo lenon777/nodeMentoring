@@ -6,31 +6,31 @@ module.exports = {
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
-                type: Sequelize.INTEGER,
+                type: Sequelize.INTEGER
             },
             login: {
-                type: Sequelize.STRING,
+                type: Sequelize.STRING
             },
             password: {
-                type: Sequelize.STRING,
+                type: Sequelize.STRING
             },
             age: {
-                type: Sequelize.INTEGER,
+                type: Sequelize.INTEGER
             },
             isDeleted: {
-                type: Sequelize.BOOLEAN,
+                type: Sequelize.BOOLEAN
             },
             createdAt: {
                 allowNull: true,
-                type: Sequelize.DATE,
+                type: Sequelize.DATE
             },
             updatedAt: {
                 allowNull: true,
-                type: Sequelize.DATE,
-            },
+                type: Sequelize.DATE
+            }
         });
     },
     down: async (queryInterface, Sequelize) => {
         await queryInterface.dropTable('Users');
-    },
+    }
 };
