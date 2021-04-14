@@ -3,7 +3,9 @@ export default class Group {
         this.groupList = groupList;
     }
     async getGroup(req, res) {
-        const group = await this.groupList.findOne();
+        const group = await this.groupList.findOne({
+            where: { id: req.params.id }
+        });
         res.status(200).json(group);
     }
     async getGroups(req, res) {
@@ -12,7 +14,7 @@ export default class Group {
     }
     async createGroup(req, res) {
         const group = await this.groupList.create(req.body);
-        res.status(200).json(group[0]);
+        res.status(201).json(group[0]);
     }
 
     async updateGroup(req, res) {
@@ -26,6 +28,6 @@ export default class Group {
         await this.groupList.destroy({
             where: { id: req.params.id }
         });
-        res.status(201).json({});
+        res.status(200).json({});
     }
 }
