@@ -17,7 +17,7 @@ const suggestUsers = require('../services/suggestUsersService');
 
 const userController = new UserController(user, suggestUsers);
 const groupController = new GroupController(group);
-const usersGroupController = new UserGroupController(user, group);
+const usersGroupController = new UserGroupController(usersGroups);
 
 // User routes
 router.get('/users/:id', userController.getUser.bind(userController));
@@ -39,6 +39,6 @@ router.post('/groups', groupController.createGroup.bind(groupController));
 router.put('/groups/:id', groupController.updateGroup.bind(groupController));
 router.delete('/groups/:id', groupController.deleteGroup.bind(groupController));
 
-router.get('/addUserToGroup', usersGroupController.addUserToGroup.bind(usersGroupController));
+router.post('/addUserToGroup', usersGroupController.addUserToGroup.bind(usersGroupController));
 
 module.exports = router;
