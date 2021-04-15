@@ -12,6 +12,7 @@ export default class UserGroup {
                 await this.userGroupList.create(req.body, { transaction: t });
                 res.status(201).json({});
             } catch (err) {
+                res.status(400);
                 console.log(err);
             }
         });
