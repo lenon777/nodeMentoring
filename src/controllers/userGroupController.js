@@ -17,4 +17,29 @@ export default class UserGroup {
             }
         });
     }
+    async getGroupMembers(req, res) {
+        const members = await this.userGroupList.findAll({
+            where: {
+                groupId: req.params.id
+            }
+        });
+        if (members.length) {
+            res.status(200).json(members);
+        } else {
+            res.sendStatus(404);
+        }
+    }
+
+    async getUserGroups(req, res) {
+        const groups = await this.userGroupList.findAll({
+            where: {
+                userId: req.params.id
+            }
+        });
+        if (groups.length) {
+            res.status(200).json(groups);
+        } else {
+            res.sendStatus(404);
+        }
+    }
 }
