@@ -6,7 +6,8 @@ module.exports = {
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
-                type: Sequelize.INTEGER
+                type: Sequelize.INTEGER,
+				onDelete: 'CASCADE',
             },
             name: {
                 type: Sequelize.STRING
@@ -25,6 +26,6 @@ module.exports = {
         });
     },
     down: async (queryInterface, Sequelize) => {
-        await queryInterface.dropTable('Groups');
+        await queryInterface.dropTable('groups');
     }
 };
