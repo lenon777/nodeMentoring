@@ -40,5 +40,7 @@ router.put('/groups/:id', groupController.updateGroup.bind(groupController));
 router.delete('/groups/:id', groupController.deleteGroup.bind(groupController));
 
 router.post('/addUserToGroup', usersGroupController.addUserToGroup.bind(usersGroupController));
+router.get('/groupMembers/:id', usersGroupController.getGroupMembers.bind(usersGroupController));
+router.get('/userGroups/:id', usersGroupController.getUserGroups.bind(usersGroupController));
 
 module.exports = router;
