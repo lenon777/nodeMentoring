@@ -12,7 +12,6 @@ const usersGroups = require('../models/UserGroupModel');
 
 user.belongsToMany(group, { through: usersGroups });
 group.belongsToMany(user, { through: usersGroups });
-//onDelete: 'cascade'
 
 const suggestUsers = require('../services/suggestUsersService');
 
