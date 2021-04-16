@@ -5,8 +5,12 @@ export default class UserController {
     }
     async getUser(req, res) {
         const user = await this.usersList.findOne({
-            where: { id: req.params.id }
+            where: { id: req.params.id },
+            raw: true
         });
+
+        delete user.password;
+
         if (user) {
             res.status(200).json(user);
         } else {
