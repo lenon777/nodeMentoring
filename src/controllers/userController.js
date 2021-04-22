@@ -5,8 +5,12 @@ export default class UserController {
     }
     async getUser(req, res) {
         const user = await this.usersList.findOne({
-            where: { id: req.params.id }
+            where: { id: req.params.id },
+            raw: true
         });
+
+        delete user.password;
+
         if (user) {
             res.status(200).json(user);
         } else {
@@ -35,8 +39,6 @@ export default class UserController {
 
     async suggestUsers(req, res) {
         const users = await this.usersList.findAll();
-        res.status(200).send(
-            this.suggestedList(users, req.query.search, req.query.limit)
-        );
+        res.status(200).send(this.suggestedList(users, req.query.search, req.query.limit));
     }
 }

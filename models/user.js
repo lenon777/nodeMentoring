@@ -17,11 +17,11 @@ module.exports = (sequelize, DataTypes) => {
             login: DataTypes.STRING,
             password: DataTypes.STRING,
             age: DataTypes.NUMBER,
-            isDeleted: DataTypes.BOOLEAN,
+            isDeleted: DataTypes.BOOLEAN
         },
         {
             sequelize,
-            modelName: 'User',
+            modelName: 'User'
         }
     );
     return User;
