@@ -1,4 +1,4 @@
-const logger = require('../logger/logger');
+const logErrorHelper = require('../logger/loggerHelper');
 export default class Group {
     constructor(groupList) {
         this.groupList = groupList;
@@ -10,34 +10,50 @@ export default class Group {
             });
             res.status(200).json(group);
         } catch (err) {
-            logger.error({
-                method: req.method,
-                arguments: req.params,
-                msg: err.message
-            });
-            next(err);
+            logErrorHelper(req.method, req.params, err.message);
+            return next(err);
         }
     }
-    async getGroups(req, res) {
-        const groups = await this.groupList.findAll();
-        res.status(200).json(groups);
+    async getGroups(req, res, next) {
+        try {
+            const groups = await this.groupList.findAll();
+            res.status(200).json(groups);
+        } catch (err) {
+            logErrorHelper(req.method, req.params, err.message);
+            return next(err);
+        }
     }
-    async createGroup(req, res) {
-        const group = await this.groupList.create(req.body);
-        res.status(201).json(group[0]);
+    async createGroup(req, res, next) {
+        try {
+            const group = await this.groupList.create(req.body);
+            res.status(201).json(group[0]);
+        } catch (err) {
+            logErrorHelper(req.method, req.body, err.message);
+            return next(err);
+        }
     }
 
-    async updateGroup(req, res) {
-        const group = await this.groupList.update(req.body, {
-            where: { id: req.body.id }
-        });
-        res.status(200).json(group[0]);
+    async updateGroup(req, res, next) {
+        try {
+            const group = await this.groupList.update(req.body, {
+                where: { id: req.body.id }
+            });
+            res.status(200).json(group[0]);
+        } catch (err) {
+            logErrorHelper(req.method, req.body, err.message);
+            return next(err);
+        }
     }
 
-    async deleteGroup(req, res) {
-        await this.groupList.destroy({
-            where: { id: req.params.id }
-        });
-        res.status(200).json({});
+    async deleteGroup(req, res, next) {
+        try {
+            await this.groupList.destroy({
+                where: { id: req.params.id }
+            });
+            res.status(200).json({});
+        } catch (err) {
+            logErrorHelper(req.method, req.params, err.message);
+            return next(err);
+        }
     }
 }
