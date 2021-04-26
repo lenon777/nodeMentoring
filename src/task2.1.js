@@ -9,10 +9,16 @@ process.on('uncaughtException', (err) => {
     process.exit(1);
 });
 
+process.on('unhandledRejection', (err) => {
+    logger.error(err.message);
+    logger.error(err.stack);
+    process.exit(1);
+});
+
 app.listen(3000);
 app.use(express.json());
 app.use((req, res, next) => {
-    logger.info(`Method ${req.method}+ Arguments ${req.url}`);
+    logger.info(`Method ${req.method}+ Arguments ${req.method === 'GET' ? req.url : JSON.stringify(req.body)}`);
     next();
 });
 app.use('/', router);
@@ -23,7 +29,7 @@ app.use((req, res, next) => {
     next(error);
 });
 
-app.use((error, req, res, next) => {
+app.use(async (error, req, res, next) => {
     res.status(error.status || 500);
     res.json({
         error: {
