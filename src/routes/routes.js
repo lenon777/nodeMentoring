@@ -19,28 +19,34 @@ const userController = new UserController(user, suggestUsers);
 const groupController = new GroupController(group);
 const usersGroupController = new UserGroupController(usersGroups);
 
+const runAsyncWrapper = (callback) => {
+    return (req, res, next) => {
+        callback(req, res, next).catch(next);
+    };
+};
+
 // User routes
-router.get('/users/:id', userController.getUser.bind(userController));
+router.get('/users/:id', runAsyncWrapper(userController.getUser.bind(userController)));
 
-router.post('/users', validateSchema(schema), userController.addUser.bind(userController));
+router.post('/users', validateSchema(schema), runAsyncWrapper(userController.addUser.bind(userController)));
 
-router.put('/users', validateSchema(schema), userController.updateUser.bind(userController));
+router.put('/users', validateSchema(schema), runAsyncWrapper(userController.updateUser.bind(userController)));
 
-router.delete('/users/:id', userController.deleteUser.bind(userController));
+router.delete('/users/:id', runAsyncWrapper(userController.deleteUser.bind(userController)));
 
-router.get('/auto-suggest/users', userController.suggestUsers.bind(userController));
+router.get('/auto-suggest/users', runAsyncWrapper(userController.suggestUsers.bind(userController)));
 
 // Group routes
 
 router.get('/groups/:id', groupController.getGroup.bind(groupController));
-router.get('/groups', groupController.getGroups.bind(groupController));
+router.get('/groups', runAsyncWrapper(groupController.getGroups.bind(groupController)));
 
-router.post('/groups', groupController.createGroup.bind(groupController));
-router.put('/groups/:id', groupController.updateGroup.bind(groupController));
-router.delete('/groups/:id', groupController.deleteGroup.bind(groupController));
+router.post('/groups', runAsyncWrapper(groupController.createGroup.bind(groupController)));
+router.put('/groups/:id', runAsyncWrapper(groupController.updateGroup.bind(groupController)));
+router.delete('/groups/:id', runAsyncWrapper(groupController.deleteGroup.bind(groupController)));
 
-router.post('/addUserToGroup', usersGroupController.addUserToGroup.bind(usersGroupController));
-router.get('/groupMembers/:id', usersGroupController.getGroupMembers.bind(usersGroupController));
-router.get('/userGroups/:id', usersGroupController.getUserGroups.bind(usersGroupController));
+router.post('/addUserToGroup', runAsyncWrapper(usersGroupController.addUserToGroup.bind(usersGroupController)));
+router.get('/groupMembers/:id', runAsyncWrapper(usersGroupController.getGroupMembers.bind(usersGroupController)));
+router.get('/userGroups/:id', runAsyncWrapper(usersGroupController.getUserGroups.bind(usersGroupController)));
 
 module.exports = router;

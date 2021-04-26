@@ -1,12 +1,22 @@
+const logger = require('../logger/logger');
 export default class Group {
     constructor(groupList) {
         this.groupList = groupList;
     }
-    async getGroup(req, res) {
-        const group = await this.groupList.findOne({
-            where: { id: req.params.id }
-        });
-        res.status(200).json(group);
+    async getGroup(req, res, next) {
+        try {
+            const group = await this.groupList.findOne({
+                where: { id: req.params.id }
+            });
+            res.status(200).json(group);
+        } catch (err) {
+            logger.error({
+                method: req.method,
+                arguments: req.params,
+                msg: err.message
+            });
+            next(err);
+        }
     }
     async getGroups(req, res) {
         const groups = await this.groupList.findAll();
