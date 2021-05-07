@@ -4,5 +4,6 @@
 	"workbench.editor.closeEmptyGroups": false,
 	"prettier.useTabs": false,
 	"prettier.endOfLine": "auto",
-	"prettier.trailingComma": "none"
+	"prettier.trailingComma": "none",
+	"editor.comments.insertSpace": false
 }
