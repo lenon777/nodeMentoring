@@ -1,3 +1,5 @@
+const jwt = require('jsonwebtoken');
+const config = require('../../config/config');
 const logErrorHelper = require('../logger/loggerHelper');
 export default class UserController {
     constructor(usersList, suggestedList) {
@@ -59,6 +61,30 @@ export default class UserController {
             res.status(200).send(this.suggestedList(users, req.query.search, req.query.limit));
         } catch (err) {
             logErrorHelper(req.method, req.params, err.message);
+            return next(err);
+        }
+    }
+    async login(req, res, next) {
+        try {
+            const user = await this.usersList.findOne({
+                where: {
+                    login: req.body.login,
+                    password: req.body.password
+                },
+                raw: true
+            });
+            if (!user) {
+                return res.status(401).send({
+                    successs: false,
+                    message: 'Bad username/password'
+                });
+            }
+            const payload = { id: user.id };
+            const token = jwt.sign(payload, config.secret, { expiresIn: 120 });
+
+            res.send(token);
+        } catch (err) {
+            logErrorHelper(req.method, req.body, err.message);
             return next(err);
         }
     }
