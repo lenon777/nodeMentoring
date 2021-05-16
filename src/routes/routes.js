@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const schema = require('../validations/user.schema');
+const authMiddleware = require('../middleware/auth');
 import { validateSchema } from '../validations/validations';
 import UserController from '../controllers/userController';
 import GroupController from '../controllers/groupController';
 import UserGroupController from '../controllers/userGroupController';
-
-import checkToken from '../controllers/AuthController';
+import AuthController from '../controllers/AuthController';
 
 const user = require('../models/UserModel');
 const group = require('../models/GroupModel');
@@ -15,41 +15,35 @@ const token = require('../models/TokenModel');
 
 user.belongsToMany(group, { through: usersGroups });
 group.belongsToMany(user, { through: usersGroups });
-token.belongsTo(user);
-
-//const tokens = token.findAll();
-//console.log(tokens);
+user.hasOne(token);
 
 const suggestUsers = require('../services/suggestUsersService');
 
 const userController = new UserController(user, suggestUsers);
 const groupController = new GroupController(group);
 const usersGroupController = new UserGroupController(usersGroups);
+const authController = new AuthController(token, user);
 
 // User routes
-router.get('/users/:id', userController.getUser.bind(userController));
-
-router.post('/users', checkToken, validateSchema(schema), userController.addUser.bind(userController));
-
-router.put('/users', validateSchema(schema), userController.updateUser.bind(userController));
-
-router.delete('/users/:id', userController.deleteUser.bind(userController));
-
-router.get('/auto-suggest/users', userController.suggestUsers.bind(userController));
-
-router.post('/login', userController.login.bind(userController));
+router.get('/users/:id', authMiddleware, userController.getUser.bind(userController));
+router.post('/users', authMiddleware, validateSchema(schema), userController.addUser.bind(userController));
+router.put('/users', authMiddleware, validateSchema(schema), userController.updateUser.bind(userController));
+router.delete('/users/:id', authMiddleware, userController.deleteUser.bind(userController));
+router.get('/auto-suggest/users', authMiddleware, userController.suggestUsers.bind(userController));
 
 // Group routes
 
-router.get('/groups/:id', groupController.getGroup.bind(groupController));
-router.get('/groups', checkToken, groupController.getGroups.bind(groupController));
+router.get('/groups/:id', authMiddleware, groupController.getGroup.bind(groupController));
+router.get('/groups', authMiddleware, groupController.getGroups.bind(groupController));
+router.post('/groups', authMiddleware, groupController.createGroup.bind(groupController));
+router.put('/groups/:id', authMiddleware, groupController.updateGroup.bind(groupController));
+router.delete('/groups/:id', authMiddleware, groupController.deleteGroup.bind(groupController));
+router.post('/addUserToGroup', authMiddleware, usersGroupController.addUserToGroup.bind(usersGroupController));
+router.get('/groupMembers/:id', authMiddleware, usersGroupController.getGroupMembers.bind(usersGroupController));
+router.get('/userGroups/:id', authMiddleware, usersGroupController.getUserGroups.bind(usersGroupController));
 
-router.post('/groups', groupController.createGroup.bind(groupController));
-router.put('/groups/:id', groupController.updateGroup.bind(groupController));
-router.delete('/groups/:id', groupController.deleteGroup.bind(groupController));
-
-router.post('/addUserToGroup', usersGroupController.addUserToGroup.bind(usersGroupController));
-router.get('/groupMembers/:id', usersGroupController.getGroupMembers.bind(usersGroupController));
-router.get('/userGroups/:id', usersGroupController.getUserGroups.bind(usersGroupController));
+// Auth routes
+router.post('/login', authController.login.bind(authController));
+router.post('/refresh-token', authController.refreshToken.bind(authController));
 
 module.exports = router;
