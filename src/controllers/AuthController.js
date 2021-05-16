@@ -1,44 +1,68 @@
 const jwt = require('jsonwebtoken');
-import { v4 as uuidv4 } from 'uuid';
-const { secret, tokens } = require('../../config/config').jwtData;
-
-const checkToken = (req, res, next) => {
-    const token = req.headers['x-access-token'];
-    if (!token) {
-        return res.status(401).send({ success: false, message: 'No token provided' });
+const bcrypt = require('bcrypt');
+const logErrorHelper = require('../logger/loggerHelper');
+const { secret } = require('../../config/jwtConfig').jwtData;
+const authHelper = require('../helpers/authHelper');
+export default class AuthController {
+    constructor(tokenList, usersList) {
+        this.tokenList = tokenList;
+        this.usersList = usersList;
     }
 
-    return jwt.verify(token, secret, (err, decoded) => {
-        if (err) {
-            return res.status(403).send({ success: false, message: 'Invalid token' });
+    async login(req, res, next) {
+        try {
+            const user = await this.usersList.findOne({
+                where: {
+                    login: req.body.login
+                },
+                raw: true
+            });
+
+            if (!user) {
+                return res.status(404).json(`${req.body.login} does not exist. Please register first!`);
+            }
+
+            if (bcrypt.compareSync(req.body.password, user.password)) {
+                res.send(this.updateTokens(user.id));
+            } else {
+                return res.status(401).send({
+                    successs: false,
+                    message: 'Bad username/password'
+                });
+            }
+        } catch (err) {
+            logErrorHelper(req.method, req.body, err.message);
+            return next(err);
         }
-        next();
-    });
-};
+    }
+    updateTokens(userId) {
+        const accessToken = authHelper.generateAccessToken(userId);
+        const refreshToken = authHelper.generateRefreshToken(userId);
+        authHelper.replaceDbRefreshToken(refreshToken.token, userId);
+        return { accessToken: accessToken, refreshToken: refreshToken };
+    }
 
-const generatAccessToken = (userId) => {
-    const payload = {
-        userId,
-        type: tokens.access.type
-    };
-    const options = { expiresIn: tokens.access.expires };
-    return jwt.sign(payload, secret, options);
-};
+    async refreshToken(req, res) {
+        const { refreshToken } = req.body;
+        let payload;
+        try {
+            payload = jwt.verify(refreshToken, secret);
+            if (payload.type !== 'refresh') {
+                return res.status(403).json({ message: 'Invalid token!' });
+            }
+        } catch (err) {
+            if (err instanceof jwt.TokenExpiredError) {
+                return res.status(400).json({ message: 'Token expired!' });
+            } else if (err instanceof jwt.JsonWebTokenError) {
+                return res.status(403).json({ message: 'Invalid token!' });
+            }
+        }
+        const token = await this.tokenList.findOne({ id: payload.id });
 
-const generateRefreshToken = () => {
-    const payload = {
-        id: uuidv4(),
-        type: tokens.refresh.type
-    };
-    const options = { expiresIn: tokens.refresh.expires };
-    return {
-        id: payload.id,
-        token: jwt.sign(payload, secret, options)
-    };
-};
-
-const replaceDbRefreshToken = (tokenId,userId) => {
-	
+        if (token === null) {
+            throw new Error('Invalid token!');
+        } else {
+            return res.send(this.updateTokens(token.id));
+        }
+    }
 }
-
-module.exports = checkToken;

@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const cors = require('cors');
 const router = require('./routes/routes');
 const logger = require('./logger/logger');
 
@@ -21,6 +22,7 @@ app.use((req, res, next) => {
     logger.info(`Method ${req.method}+ Arguments ${req.method === 'GET' ? req.url : JSON.stringify(req.body)}`);
     next();
 });
+app.use(cors());
 app.use('/', router);
 
 app.use((req, res, next) => {

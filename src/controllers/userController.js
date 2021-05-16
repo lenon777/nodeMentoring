@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
-const config = require('../../config/config');
+const bcrypt = require('bcrypt');
+const Sequelize = require('sequelize');
 const logErrorHelper = require('../logger/loggerHelper');
 export default class UserController {
     constructor(usersList, suggestedList) {
@@ -13,6 +13,10 @@ export default class UserController {
                 raw: true
             });
 
+            if (!user) {
+                res.status(404).json({ message: 'User does not exist' });
+            }
+
             delete user.password;
             res.status(200).json(user);
         } catch (err) {
@@ -23,10 +27,20 @@ export default class UserController {
 
     async addUser(req, res, next) {
         try {
-            await this.usersList.create(req.body);
+            const hash = bcrypt.hashSync(req.body.password, 10);
+            await this.usersList.create({
+                login: req.body.login,
+                password: hash,
+                age: req.body.age,
+                isDeleted: req.body.isDeleted
+            });
             res.status(201).json({});
         } catch (err) {
             logErrorHelper(req.method, req.body, err.message);
+            if (err instanceof Sequelize.UniqueConstraintError) {
+                err.message = 'Email address already in use!';
+                return next(err);
+            }
             return next(err);
         }
     }
@@ -61,30 +75,6 @@ export default class UserController {
             res.status(200).send(this.suggestedList(users, req.query.search, req.query.limit));
         } catch (err) {
             logErrorHelper(req.method, req.params, err.message);
-            return next(err);
-        }
-    }
-    async login(req, res, next) {
-        try {
-            const user = await this.usersList.findOne({
-                where: {
-                    login: req.body.login,
-                    password: req.body.password
-                },
-                raw: true
-            });
-            if (!user) {
-                return res.status(401).send({
-                    successs: false,
-                    message: 'Bad username/password'
-                });
-            }
-            const payload = { id: user.id };
-            const token = jwt.sign(payload, config.secret, { expiresIn: 120 });
-
-            res.send(token);
-        } catch (err) {
-            logErrorHelper(req.method, req.body, err.message);
             return next(err);
         }
     }
