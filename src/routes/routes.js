@@ -7,6 +7,7 @@ import UserController from '../controllers/userController';
 import GroupController from '../controllers/groupController';
 import UserGroupController from '../controllers/userGroupController';
 import AuthController from '../controllers/AuthController';
+import AuthService from '../services/authService';
 
 const user = require('../models/UserModel');
 const group = require('../models/GroupModel');
@@ -18,15 +19,16 @@ group.belongsToMany(user, { through: usersGroups });
 user.hasOne(token);
 
 const suggestUsers = require('../services/suggestUsersService');
+const authService = new AuthService(token);
 
-const userController = new UserController(user, suggestUsers);
+const userController = new UserController(user, suggestUsers, authService);
 const groupController = new GroupController(group);
 const usersGroupController = new UserGroupController(usersGroups);
-const authController = new AuthController(token, user);
+const authController = new AuthController(token, user, authService);
 
 // User routes
 router.get('/users/:id', authMiddleware, userController.getUser.bind(userController));
-router.post('/users', authMiddleware, validateSchema(schema), userController.addUser.bind(userController));
+router.post('/users', validateSchema(schema), userController.addUser.bind(userController));
 router.put('/users', authMiddleware, validateSchema(schema), userController.updateUser.bind(userController));
 router.delete('/users/:id', authMiddleware, userController.deleteUser.bind(userController));
 router.get('/auto-suggest/users', authMiddleware, userController.suggestUsers.bind(userController));

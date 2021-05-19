@@ -1,12 +1,9 @@
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
 const logErrorHelper = require('../logger/loggerHelper');
-const { secret } = require('../../config/jwtConfig').jwtData;
-const authHelper = require('../helpers/authHelper');
 export default class AuthController {
-    constructor(tokenList, usersList) {
+    constructor(tokenList, usersList, authService) {
         this.tokenList = tokenList;
         this.usersList = usersList;
+        this.authService = authService;
     }
 
     async login(req, res, next) {
@@ -21,9 +18,9 @@ export default class AuthController {
             if (!user) {
                 return res.status(404).json(`${req.body.login} does not exist. Please register first!`);
             }
-
-            if (bcrypt.compareSync(req.body.password, user.password)) {
-                res.send(this.updateTokens(user.id));
+            const match = await this.authService.compare(req.body.password, user.password);
+            if (match) {
+               return res.send(this.updateTokens(user.id));
             } else {
                 return res.status(401).send({
                     successs: false,
@@ -35,10 +32,11 @@ export default class AuthController {
             return next(err);
         }
     }
+
     updateTokens(userId) {
-        const accessToken = authHelper.generateAccessToken(userId);
-        const refreshToken = authHelper.generateRefreshToken(userId);
-        authHelper.replaceDbRefreshToken(refreshToken.token, userId);
+        const accessToken = this.authService.generateAccessToken(userId);
+        const refreshToken = this.authService.generateRefreshToken(userId);
+        this.authService.replaceDbRefreshToken(refreshToken.token, userId);
         return { accessToken: accessToken, refreshToken: refreshToken };
     }
 
@@ -46,14 +44,14 @@ export default class AuthController {
         const { refreshToken } = req.body;
         let payload;
         try {
-            payload = jwt.verify(refreshToken, secret);
+            payload = this.authService.verify(refreshToken);
             if (payload.type !== 'refresh') {
                 return res.status(403).json({ message: 'Invalid token!' });
             }
         } catch (err) {
-            if (err instanceof jwt.TokenExpiredError) {
+            if (err instanceof this.authService.jwt.TokenExpiredError) {
                 return res.status(400).json({ message: 'Token expired!' });
-            } else if (err instanceof jwt.JsonWebTokenError) {
+            } else if (err instanceof this.authService.jwt.JsonWebTokenError) {
                 return res.status(403).json({ message: 'Invalid token!' });
             }
         }

@@ -1,10 +1,10 @@
-const bcrypt = require('bcrypt');
 const Sequelize = require('sequelize');
 const logErrorHelper = require('../logger/loggerHelper');
 export default class UserController {
-    constructor(usersList, suggestedList) {
+    constructor(usersList, suggestedList, authService) {
         this.usersList = usersList;
         this.suggestedList = suggestedList;
+        this.authService = authService;
     }
     async getUser(req, res, next) {
         try {
@@ -14,7 +14,7 @@ export default class UserController {
             });
 
             if (!user) {
-                res.status(404).json({ message: 'User does not exist' });
+                return res.status(404).json({ message: 'User does not exist' });
             }
 
             delete user.password;
@@ -27,7 +27,10 @@ export default class UserController {
 
     async addUser(req, res, next) {
         try {
-            const hash = bcrypt.hashSync(req.body.password, 10);
+            let hash;
+            await this.authService.hash(req.body.password, 10).then((response) => {
+                hash = response;
+            });
             await this.usersList.create({
                 login: req.body.login,
                 password: hash,
