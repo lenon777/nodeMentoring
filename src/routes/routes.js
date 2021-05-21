@@ -12,7 +12,7 @@ import AuthService from '../services/authService';
 const user = require('../models/UserModel');
 const group = require('../models/GroupModel');
 const usersGroups = require('../models/UserGroupModel');
-const token = require('../models/TokenModel');
+const token = require('../models/RefreshTokens');
 
 user.belongsToMany(group, { through: usersGroups });
 group.belongsToMany(user, { through: usersGroups });
