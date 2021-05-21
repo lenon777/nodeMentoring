@@ -20,7 +20,7 @@ export default class AuthController {
             }
             const match = await this.authService.compare(req.body.password, user.password);
             if (match) {
-               return res.send(this.updateTokens(user.id));
+                return res.send(this.updateTokens(user.id));
             } else {
                 return res.status(401).send({
                     successs: false,
