@@ -27,10 +27,7 @@ export default class UserController {
 
     async addUser(req, res, next) {
         try {
-            let hash;
-            await this.authService.hash(req.body.password, 10).then((response) => {
-                hash = response;
-            });
+            let hash = await this.authService.hash(req.body.password, 10);
             await this.usersList.create({
                 login: req.body.login,
                 password: hash,

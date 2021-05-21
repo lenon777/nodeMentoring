@@ -3,8 +3,8 @@
 const bcrypt = require('bcrypt');
 const { QueryTypes } = require('sequelize');
 
-const getHash = () => {
-    return bcrypt.hashSync('qwe', 10);
+const getHash = (value) => {
+    return bcrypt.hashSync(value, 10);
 };
 
 module.exports = {
@@ -15,8 +15,6 @@ module.exports = {
         await queryInterface.sequelize.transaction(async (t) => {
             try {
                 for (let i = 0; i < users.length; i++) {
-                    console.log(users[i].id);
-                    console.log(users[i]);
                     await queryInterface.sequelize.query(
                         `UPDATE public.users set password = '${getHash(users[i].password)}'  where id=${users[i].id}`,
 						{ transaction: t }
@@ -24,6 +22,7 @@ module.exports = {
                 }
             } catch (err) {
                 console.log(err);
+				await t.rollback();
             }
         });
     },

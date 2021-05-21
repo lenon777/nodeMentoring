@@ -49,9 +49,10 @@ export default class AuthController {
                 return res.status(403).json({ message: 'Invalid token!' });
             }
         } catch (err) {
-            if (err instanceof this.authService.jwt.TokenExpiredError) {
+			const jwt = this.authService.jwt();
+            if (err instanceof jwt.TokenExpiredError) {
                 return res.status(400).json({ message: 'Token expired!' });
-            } else if (err instanceof this.authService.jwt.JsonWebTokenError) {
+            } else if (err instanceof jwt.JsonWebTokenError) {
                 return res.status(403).json({ message: 'Invalid token!' });
             }
         }

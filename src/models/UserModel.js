@@ -25,4 +25,12 @@ const User = db.define('user', {
     }
 });
 
+//User.associate = (models) => {
+//    User.hasOne(models.RefreshToken, {
+//        foreignKey: 'userId',
+//        as: 'RefreshToken',
+//        onDelete: 'CASCADE'
+//    });
+//};
+
 module.exports = User;
