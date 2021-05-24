@@ -1,4 +1,5 @@
 const logErrorHelper = require('../logger/loggerHelper');
+import { TokenExpiredError, JsonWebTokenError } from 'jsonwebtoken';
 export default class AuthController {
     constructor(tokenList, usersList, authService) {
         this.tokenList = tokenList;
@@ -20,24 +21,24 @@ export default class AuthController {
             }
             const match = await this.authService.compare(req.body.password, user.password);
             if (match) {
-                return res.send(this.updateTokens(user.id));
-            } else {
-                return res.status(401).send({
-                    successs: false,
-                    message: 'Bad username/password'
-                });
+                const response = await this.updateTokens(user.id);
+                return res.send(response);
             }
+            return res.status(401).send({
+                successs: false,
+                message: 'Bad username/password'
+            });
         } catch (err) {
             logErrorHelper(req.method, req.body, err.message);
             return next(err);
         }
     }
 
-    updateTokens(userId) {
+    async updateTokens(userId) {
         const accessToken = this.authService.generateAccessToken(userId);
         const refreshToken = this.authService.generateRefreshToken(userId);
-        this.authService.replaceDbRefreshToken(refreshToken.token, userId);
-        return { accessToken: accessToken, refreshToken: refreshToken };
+        await this.authService.replaceDbRefreshToken(refreshToken.token, userId);
+        return { accessToken, refreshToken };
     }
 
     async refreshToken(req, res) {
@@ -49,10 +50,9 @@ export default class AuthController {
                 return res.status(403).json({ message: 'Invalid token!' });
             }
         } catch (err) {
-            const jwt = this.authService.jwt();
-            if (err instanceof jwt.TokenExpiredError) {
+            if (err instanceof TokenExpiredError) {
                 return res.status(400).json({ message: 'Token expired!' });
-            } else if (err instanceof jwt.JsonWebTokenError) {
+            } else if (err instanceof JsonWebTokenError) {
                 return res.status(403).json({ message: 'Invalid token!' });
             }
         }
@@ -60,8 +60,8 @@ export default class AuthController {
 
         if (token === null) {
             throw new Error('Invalid token!');
-        } else {
-            return res.send(this.updateTokens(token.userId));
         }
+        const response = await this.updateTokens(token.userId);
+        return res.send(response);
     }
 }

@@ -36,5 +36,3 @@ module.exports = {
          */
     }
 };
-
-//await this.userGroupList.create(req.body, { transaction: t });
