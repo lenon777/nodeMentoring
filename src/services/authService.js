@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { secret, tokens } = require('../../config/jwtConfig').jwtData;
-import { v4 as uuidv4 } from 'uuid';
 
 export default class AuthService {
     constructor(tokenList) {
@@ -29,9 +28,9 @@ export default class AuthService {
         return jwt.sign(payload, secret, options);
     }
 
-    generateRefreshToken() {
+    generateRefreshToken(id) {
         const payload = {
-            id: uuidv4(),
+            id: id,
             type: tokens.refresh.type
         };
         const options = { expiresIn: tokens.refresh.expires };

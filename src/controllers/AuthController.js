@@ -49,19 +49,19 @@ export default class AuthController {
                 return res.status(403).json({ message: 'Invalid token!' });
             }
         } catch (err) {
-			const jwt = this.authService.jwt();
+            const jwt = this.authService.jwt();
             if (err instanceof jwt.TokenExpiredError) {
                 return res.status(400).json({ message: 'Token expired!' });
             } else if (err instanceof jwt.JsonWebTokenError) {
                 return res.status(403).json({ message: 'Invalid token!' });
             }
         }
-        const token = await this.tokenList.findOne({ id: payload.id });
+        const token = await this.tokenList.findOne({ userId: payload.id });
 
         if (token === null) {
             throw new Error('Invalid token!');
         } else {
-            return res.send(this.updateTokens(token.id));
+            return res.send(this.updateTokens(token.userId));
         }
     }
 }
