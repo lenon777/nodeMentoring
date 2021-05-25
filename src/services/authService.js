@@ -31,10 +31,7 @@ export default class AuthService {
             type: tokens.refresh.type
         };
         const options = { expiresIn: tokens.refresh.expires };
-        return {
-            id: payload.id,
-            token: jwt.sign(payload, secret, options)
-        };
+        return jwt.sign(payload, secret, options);
     }
 
     async replaceDbRefreshToken(token, userId) {
