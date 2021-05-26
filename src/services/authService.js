@@ -36,7 +36,7 @@ export default class AuthService {
 
     async replaceDbRefreshToken(token, userId) {
         const user = await this.tokenList.update(
-            { userId, token },
+            { token },
             {
                 where: { userId: userId }
             }

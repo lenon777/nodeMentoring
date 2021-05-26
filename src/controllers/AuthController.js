@@ -37,7 +37,7 @@ export default class AuthController {
     async updateTokens(userId) {
         const accessToken = this.authService.generateAccessToken(userId);
         const refreshToken = this.authService.generateRefreshToken(userId);
-        await this.authService.replaceDbRefreshToken(refreshToken.token, userId);
+        await this.authService.replaceDbRefreshToken(refreshToken, userId);
         return { accessToken, refreshToken };
     }
 
@@ -56,10 +56,10 @@ export default class AuthController {
                 return res.status(403).json({ message: 'Invalid token!' });
             }
         }
-        const token = await this.tokenList.findOne({ userId: payload.id });
+        const token = await this.tokenList.findOne({ where: { token: refreshToken } });
 
         if (token === null) {
-            throw new Error('Invalid token!');
+            return res.status(403).json({ message: 'Invalid token!' });
         }
         const response = await this.updateTokens(token.userId);
         return res.send(response);
