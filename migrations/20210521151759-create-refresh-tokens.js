@@ -1,37 +1,32 @@
 'use strict';
 module.exports = {
     up: async (queryInterface, Sequelize) => {
-        await queryInterface.createTable('users', {
+        await queryInterface.createTable('RefreshTokens', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
-                type: Sequelize.INTEGER,
-                onDelete: 'CASCADE'
-            },
-            login: {
-                type: Sequelize.STRING,
-            },
-            password: {
-                type: Sequelize.STRING
-            },
-            age: {
                 type: Sequelize.INTEGER
             },
-            isDeleted: {
-                type: Sequelize.BOOLEAN
+            userId: {
+                type: Sequelize.INTEGER,
+                references: { model: 'users', key: 'id' },
+                onDelete: 'CASCADE'
+            },
+            token: {
+                type: Sequelize.STRING
             },
             createdAt: {
-                allowNull: true,
+                allowNull: false,
                 type: Sequelize.DATE
             },
             updatedAt: {
-                allowNull: true,
+                allowNull: false,
                 type: Sequelize.DATE
             }
         });
     },
     down: async (queryInterface, Sequelize) => {
-        await queryInterface.dropTable('users');
+        await queryInterface.dropTable('RefreshTokens');
     }
 };
