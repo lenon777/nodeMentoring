@@ -10,7 +10,8 @@ const User = db.define('user', {
         allowNull: false
     },
     login: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        unique: true
     },
     password: {
         type: Sequelize.STRING
