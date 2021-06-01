@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-const logErrorHelper = require('../logger/loggerHelper');
+const logErrorHelper = require('../../logger/loggerHelper');
 export default class UserController {
     constructor(usersList, suggestedList, authService) {
         this.usersList = usersList;

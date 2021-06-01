@@ -3,7 +3,7 @@ const router = express.Router();
 const schema = require('../validations/user.schema');
 const authMiddleware = require('../middleware/auth');
 import { validateSchema } from '../validations/validations';
-import UserController from '../controllers/userController';
+import UserController from '../controllers/users/userController';
 import GroupController from '../controllers/groupController';
 import UserGroupController from '../controllers/userGroupController';
 import AuthController from '../controllers/AuthController';
