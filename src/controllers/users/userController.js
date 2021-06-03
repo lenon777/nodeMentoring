@@ -18,7 +18,8 @@ export default class UserController {
             }
 
             delete user.password;
-            res.status(200).json(user);
+            res.status(200);
+            res.json(user);
         } catch (err) {
             logErrorHelper(req.method, req.params, err.message);
             return next(err);
@@ -34,7 +35,8 @@ export default class UserController {
                 age: req.body.age,
                 isDeleted: req.body.isDeleted
             });
-            res.status(201).json({});
+            res.status(201);
+            res.json({});
         } catch (err) {
             logErrorHelper(req.method, req.body, err.message);
             if (err instanceof Sequelize.UniqueConstraintError) {
@@ -48,7 +50,8 @@ export default class UserController {
     async updateUser(req, res, next) {
         try {
             await this.usersList.update(req.body, { where: { id: req.body.id } });
-            res.status(200).json({});
+            res.status(200);
+            res.json({});
         } catch (err) {
             logErrorHelper(req.method, req.body, err.message);
             return next(err);
@@ -62,7 +65,8 @@ export default class UserController {
                     id: req.params.id
                 }
             });
-            res.status(200).json({});
+            res.status(200);
+            res.json({});
         } catch (err) {
             logErrorHelper(req.method, req.params, err.message);
             return next(err);
@@ -72,7 +76,8 @@ export default class UserController {
     async suggestUsers(req, res, next) {
         try {
             const users = await this.usersList.findAll();
-            res.status(200).send(this.suggestedList(users, req.query.search, req.query.limit));
+            res.status(200);
+            res.json(this.suggestedList(users, req.query.search, req.query.limit));
         } catch (err) {
             logErrorHelper(req.method, req.params, err.message);
             return next(err);
