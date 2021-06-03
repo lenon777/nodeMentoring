@@ -27,7 +27,7 @@ export default class AuthService {
 
     generateRefreshToken(id) {
         const payload = {
-            id: id,
+            id,
             type: tokens.refresh.type
         };
         const options = { expiresIn: tokens.refresh.expires };
@@ -38,11 +38,11 @@ export default class AuthService {
         const user = await this.tokenList.update(
             { token },
             {
-                where: { userId: userId }
+                where: { userId }
             }
         );
         if (user[0] === 0) {
-            await this.tokenList.create({ userId: userId, token: token });
+            await this.tokenList.create({ userId, token });
         }
     }
 }
