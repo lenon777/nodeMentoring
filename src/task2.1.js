@@ -3,6 +3,7 @@ const app = express();
 const cors = require('cors');
 const router = require('./routes/routes');
 const logger = require('./logger/logger');
+require('dotenv').config();
 
 process.on('uncaughtException', (err) => {
     logger.error(err.message);
