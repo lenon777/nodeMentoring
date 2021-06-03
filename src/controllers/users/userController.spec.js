@@ -33,7 +33,7 @@ const userController = new UserController(usersList, suggestUsersService, authSe
 
 const next = jest.fn();
 
-describe('User Route', () => {
+describe('User routes', () => {
     let req;
     let res;
     beforeEach(() => {
@@ -48,11 +48,11 @@ describe('User Route', () => {
                 limit: '2'
             }
         }),
-            (res = {
-                send: jest.fn(),
-                status: jest.fn(),
-                json: jest.fn()
-            });
+        (res = {
+            send: jest.fn(),
+            status: jest.fn(),
+            json: jest.fn()
+        });
     });
 
     it('should get user by Id', async () => {

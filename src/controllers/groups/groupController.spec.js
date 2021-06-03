@@ -24,7 +24,7 @@ const groupList = {
 const groupController = new GroupController(groupList);
 const next = jest.fn();
 
-describe('Group route', () => {
+describe('Group routes', () => {
     let req;
     let res;
     beforeEach(() => {
@@ -35,11 +35,11 @@ describe('Group route', () => {
             },
             body: groups[0]
         }),
-            (res = {
-                send: jest.fn(),
-                status: jest.fn(),
-                json: jest.fn()
-            });
+        (res = {
+            send: jest.fn(),
+            status: jest.fn(),
+            json: jest.fn()
+        });
     });
 
     it('should get group by Id', async () => {
