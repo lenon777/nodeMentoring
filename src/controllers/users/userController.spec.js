@@ -37,7 +37,7 @@ describe('User routes', () => {
     let req;
     let res;
     beforeEach(() => {
-        (req = {
+        req = {
             method: 'GET',
             params: {
                 id: 1
@@ -47,12 +47,12 @@ describe('User routes', () => {
                 search: 'l',
                 limit: '2'
             }
-        }),
-        (res = {
+        },
+        res = {
             send: jest.fn(),
             status: jest.fn(),
             json: jest.fn()
-        });
+        };
     });
 
     it('should get user by Id', async () => {

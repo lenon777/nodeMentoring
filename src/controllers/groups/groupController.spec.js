@@ -28,18 +28,18 @@ describe('Group routes', () => {
     let req;
     let res;
     beforeEach(() => {
-        (req = {
+        req = {
             method: 'GET',
             params: {
                 id: 1
             },
             body: groups[0]
-        }),
-        (res = {
+        },
+        res = {
             send: jest.fn(),
             status: jest.fn(),
             json: jest.fn()
-        });
+        };
     });
 
     it('should get group by Id', async () => {
